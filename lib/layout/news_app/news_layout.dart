@@ -8,41 +8,40 @@ class NewsLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (BuildContext context) => NewsCubit()..getBusiness(),
-      child: BlocConsumer<NewsCubit, NewsStates>(
-        builder: (context, state) {
-          var cubit = NewsCubit.get(context);
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'News App',
+    return BlocConsumer<NewsCubit, NewsStates>(
+      builder: (context, state) {
+        var cubit = NewsCubit.get(context);
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'News App',
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  cubit.changeAppMode();
+                },
+                icon: cubit.themeIcon,
               ),
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.search,
-                  ),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.search,
                 ),
-              ],
-            ),
-            body: cubit.screens[cubit.currentIndex],
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: cubit.currentIndex,
-              items: cubit.bottomItems,
-              onTap: (index) {
-                cubit.changeBottomNavBar(index);
-              },
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-              child: Icon(Icons.add),
-            ),
-          );
-        },
-        listener: (context, state) {},
-      ),
+              ),
+            ],
+          ),
+          body: cubit.screens[cubit.currentIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: cubit.currentIndex,
+            items: cubit.bottomItems,
+            onTap: (index) {
+              cubit.changeBottomNavBar(index);
+            },
+          ),
+        );
+      },
+      listener: (context, state) {},
     );
   }
 }

@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:udemy_news_app/shared/components/constants.dart';
 
 class DioHelper {
   static Dio? dio;
 
   static init() {
     dio = Dio(BaseOptions(
-      baseUrl: 'https://newsapi.org/',
+      baseUrl: newsBaseURL,
       receiveDataWhenStatusError: true,
     ));
   }

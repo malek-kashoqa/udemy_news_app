@@ -6,6 +6,7 @@ import 'package:udemy_news_app/modules/business/business_screen.dart';
 import 'package:udemy_news_app/modules/science/science_screen.dart';
 import 'package:udemy_news_app/modules/settings/settings_screen.dart';
 import 'package:udemy_news_app/modules/sports/sports_screen.dart';
+import 'package:udemy_news_app/shared/components/constants.dart';
 import 'package:udemy_news_app/shared/network/remote/dio_helper.dart';
 
 class NewsCubit extends Cubit<NewsStates> {
@@ -28,17 +29,12 @@ class NewsCubit extends Cubit<NewsStates> {
       icon: Icon(Icons.science),
       label: 'Science',
     ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.settings),
-      label: 'Settings',
-    ),
   ];
 
   List<Widget> screens = [
     BusinessScreen(),
     SportsScreen(),
     ScienceScreen(),
-    SettingsScreen(),
   ];
 
   void changeBottomNavBar(int index) {
@@ -47,27 +43,84 @@ class NewsCubit extends Cubit<NewsStates> {
   }
 
   List<dynamic> business = [];
+  int businessTotalResults = 0;
+  List<dynamic> science = [];
+  int scienceTotalResults = 0;
+  List<dynamic> sports = [];
+  int sportsTotalResults = 0;
 
   void getBusiness() {
-    emit(NewsBusinessLoadingState());
+    emit(NewsGetBusinessLoadingState());
     DioHelper.getData(
-      url: 'v2/top-headlines',
+      url: newsTopHeadlinesURL,
       query: {
-        'country': 'eg',
+        'country': newsCountry,
         'category': 'business',
-        'apiKey': '65f7f556ec76449fa7dc7c0069f040ca'
+        'apiKey': newsApiKey,
       },
     ).then((value) {
       // print(value.data.toString());
       business = value.data['articles'];
-      // print(business[0]['title']);
-      business.forEach((element) {
-        print(element.toString());
-      });
+      businessTotalResults = value.data['totalResults'];
       emit(NewsGetBusinessSuccessState());
     }).catchError((error) {
       print('Error: ${error.toString()}');
-      emit(NewsGetBusinessErrorState());
+      emit(NewsGetBusinessErrorState(error.toString()));
     });
+  }
+
+  void getScience() {
+    emit(NewsGetScienceLoadingState());
+    DioHelper.getData(
+      url: newsTopHeadlinesURL,
+      query: {
+        'country': newsCountry,
+        'category': 'science',
+        'apiKey': newsApiKey,
+      },
+    ).then((value) {
+      // print(value.data.toString());
+      science = value.data['articles'];
+      scienceTotalResults = value.data['totalResults'];
+      emit(NewsGetScienceSuccessState());
+    }).catchError((error) {
+      print('Error: ${error.toString()}');
+      emit(NewsGetScienceErrorState(error.toString()));
+    });
+  }
+
+  void getSports() {
+    emit(NewsGetSportsLoadingState());
+    DioHelper.getData(
+      url: newsTopHeadlinesURL,
+      query: {
+        'country': newsCountry,
+        'category': 'sports',
+        'apiKey': newsApiKey,
+      },
+    ).then((value) {
+      // print(value.data.toString());
+      sports = value.data['articles'];
+      sportsTotalResults = value.data['totalResults'];
+      emit(NewsGetSportsSuccessState());
+    }).catchError((error) {
+      print('Error: ${error.toString()}');
+      emit(NewsGetSportsErrorState(error.toString()));
+    });
+  }
+
+  ThemeMode appMode = ThemeMode.light;
+  Icon themeIcon = Icon(Icons.dark_mode);
+
+  void changeAppMode() {
+    if (appMode == ThemeMode.light) {
+      appMode = ThemeMode.dark;
+      themeIcon = Icon(Icons.light_mode);
+      emit(NewsGetDarkTheme());
+    } else {
+      appMode = ThemeMode.light;
+      themeIcon = Icon(Icons.dark_mode);
+      emit(NewsGetLightTheme());
+    }
   }
 }
