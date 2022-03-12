@@ -1,5 +1,6 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:udemy_news_app/layout/news_app/cubit/cubit.dart';
 
 Widget buildArticleItem(article, context) => Padding(
       padding: const EdgeInsets.all(20.0),
@@ -12,6 +13,9 @@ Widget buildArticleItem(article, context) => Padding(
               borderRadius: BorderRadius.circular(10.0),
               image: DecorationImage(
                 image: NetworkImage('${article['urlToImage']}'),
+                onError: (Object exception, StackTrace? stackTrace) {
+                  print('Unable to load the image for article');
+                },
                 fit: BoxFit.cover,
               ),
             ),
@@ -77,3 +81,9 @@ Widget articleBuilder(list, context) => ConditionalBuilder(
       },
       fallback: (context) => loadingIndicator(),
     );
+
+void navToScreen(context, Screen) => Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Screen,
+    ));
