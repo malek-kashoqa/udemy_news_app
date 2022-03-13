@@ -14,36 +14,68 @@ class SearchScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         var list = NewsCubit.get(context).search;
-        return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-                NewsCubit.get(context).search.clear();
-              },
-              icon: Icon(Icons.arrow_back),
-            ),
-          ),
-          body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: TextFormField(
-                  controller: searchController,
-                  onChanged: (value) {
-                    NewsCubit.get(context).getSearch(value);
-                  },
-                  keyboardType: TextInputType.text,
-                  autofocus: true,
-                  style: Theme.of(context).textTheme.bodyText1,
-                  validator: (value) {
-                    if (value!.isEmpty) return "No search text";
-                    return null;
-                  },
-                ),
+        var formKey = GlobalKey<FormState>();
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  NewsCubit.get(context).search.clear();
+                },
+                icon: Icon(Icons.arrow_back),
               ),
-              Expanded(child: articleBuilder(list, context)),
-            ],
+            ),
+            body: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Form(
+                    key: formKey,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            100.0,
+                          ),
+                          borderSide: BorderSide(
+                            color: NewsCubit.get(context).isDark == true
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                          100.0,
+                        )),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: NewsCubit.get(context).isDark == true
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      controller: searchController,
+                      onFieldSubmitted: (value) {
+                        formKey.currentState!.validate();
+                      },
+                      onChanged: (value) {
+                        NewsCubit.get(context).getSearch(value);
+                      },
+                      keyboardType: TextInputType.text,
+                      autofocus: true,
+                      style: Theme.of(context).textTheme.bodyText1,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "No search text";
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(child: articleBuilder(list, context, isSearch: true)),
+              ],
+            ),
           ),
         );
       },

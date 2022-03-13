@@ -13,7 +13,14 @@ class SportsScreen extends StatelessWidget {
     return BlocConsumer<NewsCubit, NewsStates>(
       builder: (context, state) {
         var list = NewsCubit.get(context).sports;
-        return articleBuilder(list, context);
+        return RefreshIndicator(
+            child: articleBuilder(list, context),
+            onRefresh: () {
+              return Future.delayed(Duration(seconds: 1)).then((value) {
+                NewsCubit.get(context).sports = [];
+                NewsCubit.get(context).getSports();
+              });
+            });
       },
       listener: (context, state) {},
     );
